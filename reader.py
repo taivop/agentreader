@@ -45,6 +45,9 @@ class ReaderToolInput(BaseModel):
         "and you want to continue reading the page.",
     )
 
+class SimpleReaderToolInput(BaseModel):
+    url: str = Field(..., description="URL of the website to read")
+
 
 class ReaderTool(BaseTool):
     """Reader tool for getting website title and contents."""
@@ -95,3 +98,46 @@ class ReaderTool(BaseTool):
 
     async def _arun(self, url: str) -> str:
         raise NotImplementedError
+
+class SimpleReaderTool(BaseTool):
+    """Reader tool for getting website title and contents, only from URL."""
+
+    name: str = "read_page"
+    args_schema: Type[BaseModel] = SimpleReaderToolInput
+    description: str = "use this to read a website"
+
+    def _run(self, url: str) -> str:
+        a = Article(url)
+        a.download()
+        a.parse()
+
+        # If no content, try to get it with Trafilatura
+        if not a.text:
+            downloaded = trafilatura.fetch_url(url)
+            if downloaded is None:
+                raise ValueError("Could not download article.")
+            result = trafilatura.extract(downloaded)
+            res = FULL_TEMPLATE.format(
+                title=a.title,
+                authors=a.authors,
+                publish_date=a.publish_date,
+                top_image=a.top_image,
+                text=result,
+            )
+        else:
+            res = FULL_TEMPLATE.format(
+                title=a.title,
+                authors=a.authors,
+                publish_date=a.publish_date,
+                top_image=a.top_image,
+                text=a.text,
+            )
+
+        if len(res) > MAX_RESULT_LENGTH_CHAR:
+            res = page_result(res, 0, MAX_RESULT_LENGTH_CHAR)
+        return res
+
+    async def _arun(self, url: str) -> str:
+        raise NotImplementedError
+    
+
