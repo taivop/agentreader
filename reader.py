@@ -22,7 +22,7 @@ PUBLISH DATE: {publish_date}
 TOP_IMAGE_URL: {top_image}
 """
 
-MAX_RESULT_LENGTH_CHAR = 2000 * 4  # characters
+MAX_RESULT_LENGTH_CHAR = 1000 * 4  # roughly 1,000 tokens
 
 
 def page_result(text: str, cursor: int, max_length: int) -> str:
@@ -122,7 +122,7 @@ class ReaderTool(BaseTool):
 
         if len(page_contents) > MAX_RESULT_LENGTH_CHAR:
             page_contents = page_result(page_contents, cursor, MAX_RESULT_LENGTH_CHAR)
-            page_contents += f"\nRESULT TOO LONG, TRUNCATED. USE CURSOR={cursor+len(page_contents)} TO CONTINUE."
+            page_contents += f"\nPAGE WAS TRUNCATED. TO CONTINUE READING, USE CURSOR={cursor+len(page_contents)}."
 
         return page_contents
 
