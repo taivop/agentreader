@@ -1,0 +1,3 @@
+langchain
+trafilatura
+newspaper3k
