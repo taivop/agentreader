@@ -67,4 +67,3 @@ That said: if you discover something valuable -- either an additional feature, o
 - [ ] extract metadata more consistently - currently doesn't work when falling back to `newspaper3k`
 - [ ] better support for e.g. Twitter and other popular non-article content
 - [ ] README.md: objective comparison against playwright, requests.get - on features, output token counts for a few websites, etc
-- [ ] add LICENSE.md
